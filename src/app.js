@@ -1,30 +1,27 @@
 const express = require('express');
 
 
+
 const app = express();
+app.get("/getUserData",(req,res)=>{
+    // try{
+        //logic of Db calls and get user data
+        throw new err("adasd");
+        res.send("user data sent");
 
-const {adminAuth,userAuth}=require("./middlewares/auth");
-app.use("/admin",adminAuth);
-//app.use("/user",userAuth);
+    // }
+    // catch(err){
+        res.status(500).send("Something went wrong");
 
-app.get("/user/getAllData",userAuth,(req, res)=>{
-    res.send("user data sent");
+    // }
+});
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        res.status(500).send("some error contact us");
+    }
 });
 
- app.get("/user/deleteData",userAuth,(req, res)=>{
-        res.send("user data deleted");
-    
-});
-app.post("/user/login",(req,res))
 
-
-app.get("/admin/getAllData",(req, res)=>{
-    res.send("admin data sent");
-
-});
-app.get("/admin/deleteAdminData",(req,res)=>{
-    res.send("deleted Admin data");
-})
 
 app.listen(7777, () => {
     console.log("server is successfull listening on port 7777");
