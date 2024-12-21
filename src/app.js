@@ -1,19 +1,20 @@
-const express = require('express');
-const connectDB=require("./config/database")
-const app = express();
+const express=require("express");
+const connectDB=require('./config/database');
+const app=express();
 
 connectDB()
 .then(()=>{
-    console.log("Database connection successfully established");
+    console.log("Database connection eastablished");
+    app.listen(7777,()=>{
+        console.log("server is listening at port 7777");
+        
+    });
     
-    app.listen(7777, () => {
-        console.log("server is successfull listening on port 7777");
-    
-    }) 
-    
-    })
-    .catch((err)=>{
-        console.log("Database cannot be connected");
 })
+.catch((err)=>{
+    console.error("Database connection not established")
+
+});
+
 
 
