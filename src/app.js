@@ -68,6 +68,36 @@ app.get("/user2",async(req,res)=>{
     }
 })
 
+//Delete user API
+
+app.delete("/user",async(req,res)=>{
+    const userId=req.body.userId;
+    try{
+        //await User.findByIdAndDelete({-id: userId});
+        await User.findByIdAndDelete(userId);
+        res.send("user deleted Successfully");
+    }
+    catch(err){
+        res.status(404).send("Something went wrong");
+    }
+})
+
+
+
+
+//update UserAPI
+app.patch("/user",async(req,res)=>{
+    const userId=req.body.userId;
+    const data=req.body;
+    try{
+        await User.findByIdAndUpdate({_id:userId},data );
+        res.send("User updated Successfully");
+    }
+    catch(err){
+        res.status(400).send("Somethig went wrong");
+    }
+})
+
 
 connectDB()
 .then(()=>{
