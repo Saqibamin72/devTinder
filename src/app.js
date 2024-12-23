@@ -6,14 +6,6 @@ app.use(express.json());
 app.post("/signUp", async(req,res)=>{
  
 
-
-    // const user=new User({
-    //     firstName:"irfan",
-    //     lastName:"sheikh",
-    //     emailId:"Sirfn@gmail.com",
-    //     password:"aifal@123",
-        
-    // })
     try{ 
         const user=new User(req.body);
 
@@ -25,9 +17,50 @@ app.post("/signUp", async(req,res)=>{
     }
    
 
+
+});
+//Get One user using find
+app.get("/user",async(req,res)=>{
+    const userEmail=req.body.emailId;
+    try{
+        //const users=await users.find(emailId:req.body.emailId);S
+        const users=await User.find({emailId:userEmail});
+        if(users.length===0){
+            res.status(404).send("User not found");
+          }
+        else
+        {
+            res.send(users)
+        }
+    }catch(err){
+        res.status.send("Something went Wrong");
+    }
+});
+// Get all Users using find
+app.get("/feed",async(req,res)=>{
+    
+    try {
+        const users=await User.find({});
+        res.send(users)
+     }
+      catch (error) {
+        res.status.send("Something went Wrong");
+    }
 });
 
+//Get Api using findOne if two users have same emailId
+app.get("/user2",async(req,res)=>{
+    const userEmail=req.body.emailId;
+    try{
+        
+        const users=await User.findOne({emailId:userEmail});
+         res.send(users);
 
+    }
+    catch(err){
+        res.status(400).send("something went wrong");
+    }
+})
 
 
 connectDB()
