@@ -1,5 +1,9 @@
 const express=require("express");
 const connectDB=require("./config/database");
+
+
+const {validateSignUpData}=require("./utils/validation");
+const bcrypt=require("bcrypt");
 const app=express();
 const User=require("./models/user");
 app.use(express.json());
@@ -7,8 +11,21 @@ app.post("/signUp", async(req,res)=>{
  
 
     try{ 
-        const user=new User(req.body);
+        //validation of data 
+        validateSignUpData(req);
+        //encrypt password using hash (use npm i bcrypt)
+        const { firstName, lastName, emailId, password } = req.body;
 
+        const passwordHash=await bcrypt.hash(password,10);
+        console.log(passwordHash);
+        //create instance of new User
+        const user=new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordHash,
+        })
+         
         await user.save();
         res.send("User added successfully");
     }
@@ -97,6 +114,7 @@ app.patch("/user",async(req,res)=>{
         res.status(400).send("Somethig went wrong");
     }
 })
+
 
 
 connectDB()
