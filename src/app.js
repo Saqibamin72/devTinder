@@ -32,10 +32,35 @@ app.post("/signUp", async(req,res)=>{
     catch(err){
         res.status(400).send("User not saved:"+err.message);
     }
+});
    
 
 
+//Login APi with Authentication
+app.post("/login",async(req,res)=>{
+try{
+const{emailId,password}=req.body;
+const user=await User.findOne({emailId: emailId});
+if(!user){
+    throw new Error("Email id not present in DB");
+}
+const isPasswordValid=await bcrypt.compare(password,user.password);
+if(isPasswordValid){
+    res.send("logged successfully");
+}
+else{
+    throw new Error("password not correct");
+}
+}
+catch(err){
+    res.status(400).send("ERROR:"+err.message);
+}
 });
+
+
+
+
+
 //Get One user using find
 app.get("/user",async(req,res)=>{
     const userEmail=req.body.emailId;
@@ -53,6 +78,9 @@ app.get("/user",async(req,res)=>{
         res.status.send("Something went Wrong");
     }
 });
+
+
+
 // Get all Users using find
 app.get("/feed",async(req,res)=>{
     
@@ -64,6 +92,8 @@ app.get("/feed",async(req,res)=>{
         res.status.send("Something went Wrong");
     }
 });
+
+
 
 //Get Api using findOne if two users have same emailId
 app.get("/user2",async(req,res)=>{
@@ -84,6 +114,8 @@ app.get("/user2",async(req,res)=>{
         res.status(400).send("something went wrong");
     }
 })
+
+
 
 //Delete user API
 
