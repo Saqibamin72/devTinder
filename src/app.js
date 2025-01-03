@@ -6,162 +6,88 @@ const {validateSignUpData}=require("./utils/validation");
 const bcrypt=require("bcrypt");
 const app=express();
 const User=require("./models/user");
-const cookieParse= require("cookie-parser");
+const cookieParser= require("cookie-parser");
+const jwt=require("jsonwebtoken");
 
 app.use(express.json());
-app.use(cookieParse());
+app.use(cookieParser());
+
+
 app.post("/signUp", async(req,res)=>{
- 
-
-    try{ 
-        //validation of data 
-        validateSignUpData(req);
-        //encrypt password using hash (use npm i bcrypt)
-        const { firstName, lastName, emailId, password } = req.body;
-
-        const passwordHash=await bcrypt.hash(password,10);
-        console.log(passwordHash);
-        //create instance of new User
-        const user=new User({
+    try{
+         validateSignUpData(req);
+         const{firstName,lastName,emailId,password}=req.body;
+         const passwordHash=await bcrypt.hash(password,10);
+         
+         const user=new User({
             firstName,
             lastName,
             emailId,
             password:passwordHash,
-        })
-         
-        await user.save();
-        res.send("User added successfully");
+         })
+         await user.save();
+         res.send("user saved successfully")
+        
     }
     catch(err){
-        res.status(400).send("User not saved:"+err.message);
+        res.status(400).send("ERROR:"+err.message);
     }
 });
-   
+ //login
+ app.post("/login",async(req,res)=>{
+   try{
 
-
-//Login APi with Authentication
-app.post("/login",async(req,res)=>{
-try{
-const{emailId,password}=req.body;
-const user=await User.findOne({emailId: emailId});
-if(!user){
-    throw new Error("Email id not present in DB");
-}
-const isPasswordValid=await bcrypt.compare(password,user.password);
+    const{emailId,password}=req.body;
+    const user=await User.findOne({emailId:emailId});
+    if(!user){
+        throw new Error("invalid credentials");
+    }
+    const isPasswordValid= await bcrypt.compare(password,user.password);
 if(isPasswordValid){
-    res.cookie("token","asdasdfasdfahdfgjhasgfj")
 
-    res.send("logged successfully");
+ const token=await jwt.sign({_id:user._id},"Dev@Tinder790");
+  console.log(token);
+  
+ res.cookie("token",token);
+    res.send("login successfully");
+
 }
 else{
-    throw new Error("password not correct");
+    throw new Error("Invalid password")
 }
-}
-catch(err){
+
+   }
+   catch(err){
     res.status(400).send("ERROR:"+err.message);
-}
-});
+   }
 
-//get profile using cookies
-app.get("/profile",async(req,res)=>{
- const cookies=req.cookies;
- console.log(cookies);
- res.send("reading cookies");
+ })
 
- 
-
-
-
-})
-
-
-
-
-//Get One user using find
-app.get("/user",async(req,res)=>{
-    const userEmail=req.body.emailId;
+ app.get("/profile",async(req,res)=>{
     try{
-        //const users=await users.find(emailId:req.body.emailId);S
-        const users=await User.find({emailId:userEmail});
-        if(users.length===0){
-            res.status(404).send("User not found");
-          }
-        else
-        {
-            res.send(users)
-        }
-    }catch(err){
-        res.status.send("Something went Wrong");
+    const cookies=req.cookies;
+    const {token}=cookies;
+    if(!token){
+        throw new Error("invalid token")
     }
-});
+    const decodedObj=await jwt.verify(token,"Dev@Tinder790");
+    const{_id}=decodedObj;
+    console.log("LoggedIn user"+_id);
+    const user=await User.findById(_id);
+    if(!user){
+        throw new Error("user not found");
+    }
 
-
-
-// Get all Users using find
-app.get("/feed",async(req,res)=>{
     
-    try {
-        const users=await User.find({});
-        res.send(users)
-     }
-      catch (error) {
-        res.status.send("Something went Wrong");
-    }
-});
-
-
-
-//Get Api using findOne if two users have same emailId
-app.get("/user2",async(req,res)=>{
-    const userEmail=req.body.emailId;
-    try{
-        
-        const user=await User.findOne({emailId:userEmail});
-        if(!user){
-            res.status(404).send("User not found");
-        }
-        else{
-            res.send(user);
-        }
-         
-
-    }
+    res.send(user);
+}
     catch(err){
-        res.status(400).send("something went wrong");
-    }
-})
+        res.status(400).send("ERROR:"+err.message);
+       }
+    
+    
+ })
 
-
-
-//Delete user API
-
-app.delete("/user",async(req,res)=>{
-    const userId=req.body.userId;
-    try{
-        //await User.findByIdAndDelete({-id: userId});
-        await User.findByIdAndDelete(userId);
-        res.send("user deleted Successfully");
-    }
-    catch(err){
-        res.status(404).send("Something went wrong");
-    }
-})
-
-
-
-
-//update UserAPI
-app.patch("/user",async(req,res)=>{
-    const userId=req.body.userId;
-    const data=req.body;
-    try{
-        await User.findByIdAndUpdate({_id:userId},data );
-        res.send("User updated Successfully");
-    }
-    catch(err){
-        res.status(400).send("Somethig went wrong");
-    }
-})
 
 
 
