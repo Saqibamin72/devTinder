@@ -6,7 +6,10 @@ const {validateSignUpData}=require("./utils/validation");
 const bcrypt=require("bcrypt");
 const app=express();
 const User=require("./models/user");
+const cookieParse= require("cookie-parser");
+
 app.use(express.json());
+app.use(cookieParse());
 app.post("/signUp", async(req,res)=>{
  
 
@@ -46,6 +49,8 @@ if(!user){
 }
 const isPasswordValid=await bcrypt.compare(password,user.password);
 if(isPasswordValid){
+    res.cookie("token","asdasdfasdfahdfgjhasgfj")
+
     res.send("logged successfully");
 }
 else{
@@ -57,6 +62,17 @@ catch(err){
 }
 });
 
+//get profile using cookies
+app.get("/profile",async(req,res)=>{
+ const cookies=req.cookies;
+ console.log(cookies);
+ res.send("reading cookies");
+
+ 
+
+
+
+})
 
 
 
