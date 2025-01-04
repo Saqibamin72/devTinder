@@ -1,7 +1,7 @@
 const express=require("express");
 const connectDB=require("./config/database");
 
-
+const{userAuth}=require("./middlewares/auth");
 const {validateSignUpData}=require("./utils/validation");
 const bcrypt=require("bcrypt");
 const app=express();
@@ -46,7 +46,7 @@ app.post("/signUp", async(req,res)=>{
 if(isPasswordValid){
 
  const token=await jwt.sign({_id:user._id},"Dev@Tinder790");
-  console.log(token);
+  
   
  res.cookie("token",token);
     res.send("login successfully");
@@ -63,22 +63,9 @@ else{
 
  })
 
- app.get("/profile",async(req,res)=>{
+ app.get("/profile",userAuth,async(req,res)=>{
     try{
-    const cookies=req.cookies;
-    const {token}=cookies;
-    if(!token){
-        throw new Error("invalid token")
-    }
-    const decodedObj=await jwt.verify(token,"Dev@Tinder790");
-    const{_id}=decodedObj;
-    console.log("LoggedIn user"+_id);
-    const user=await User.findById(_id);
-    if(!user){
-        throw new Error("user not found");
-    }
-
-    
+   const user=req.user;    
     res.send(user);
 }
     catch(err){
@@ -87,7 +74,13 @@ else{
     
     
  })
-
+//sendconnection API
+app.post("/sendConnectionRequest",userAuth,async(req,res)=>{
+    const user=req.user;
+    console.log("connection request");
+    res.send(user.firstName+" :send connection request");
+    
+});
 
 
 
