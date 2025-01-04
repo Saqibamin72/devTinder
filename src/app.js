@@ -45,10 +45,16 @@ app.post("/signUp", async(req,res)=>{
     const isPasswordValid= await bcrypt.compare(password,user.password);
 if(isPasswordValid){
 
- const token=await jwt.sign({_id:user._id},"Dev@Tinder790");
+ const token=await jwt.sign({_id:user._id},"Dev@Tinder790",{
+    expiresIn:"0d",
+ });
+
+ 
   
   
- res.cookie("token",token);
+ res.cookie("token",token,{
+    expires:new Date(Date.now()+8*3600000)
+ });
     res.send("login successfully");
 
 }
