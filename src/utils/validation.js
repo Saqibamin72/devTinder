@@ -12,6 +12,9 @@ if(!validator.isStrongPassword(password)){
     throw new Error("Please enter strong password");
 }
 }
+
+
+
 module.exports={
     validateSignUpData,
 }
