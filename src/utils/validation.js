@@ -12,9 +12,16 @@ if(!validator.isStrongPassword(password)){
     throw new Error("Please enter strong password");
 }
 }
+const validateEditData=(req)=>{
+    const allowedEditFields=["firstName","lastName","emailId","Skills","About"];
+    const isEditAllowed=Object.keys(req.body).every((fields)=>allowedEditFields.includes(fields));
 
+
+    return isEditAllowed;
+}
 
 
 module.exports={
     validateSignUpData,
+    validateEditData,
 }
