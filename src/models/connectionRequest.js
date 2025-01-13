@@ -3,10 +3,14 @@ const connectionRequestSchema=new mongoose.Schema({
     fromUserId:{
         type:mongoose.SchemaTypes.ObjectId,
         required:true,
+        //index:true, putting index 
+        
+
     },
     toUserId:{
         type:mongoose.SchemaTypes.ObjectId,
         required:true,
+       // unique:true  putting index automatically,
     },
     status:{
         type:String,
@@ -23,6 +27,11 @@ const connectionRequestSchema=new mongoose.Schema({
 {timeStamps:true},
 
 );
+
+//putting index in API
+//connectionRequestSchema.index({fromUserId:1})
+//compound index
+connectionRequestSchema.index({fromUserId:1, toUserId:1});
 connectionRequestSchema.pre("save", function (next) {
     const connectionRequest = this;
     // Check if the fromUserId is same as toUserId
