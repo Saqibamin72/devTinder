@@ -3,6 +3,7 @@ const connectionRequestSchema=new mongoose.Schema({
     fromUserId:{
         type:mongoose.SchemaTypes.ObjectId,
         required:true,
+        ref:"User",
         //index:true, putting index 
         
 
@@ -10,6 +11,7 @@ const connectionRequestSchema=new mongoose.Schema({
     toUserId:{
         type:mongoose.SchemaTypes.ObjectId,
         required:true,
+        ref:"User",
        // unique:true  putting index automatically,
     },
     status:{
