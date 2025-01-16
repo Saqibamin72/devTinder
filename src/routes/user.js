@@ -1,8 +1,10 @@
 const express = require("express");
 const userRouter = express.Router();
 
+
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
+const User=require("../models/user");
 const USER_SAFE_DATA=["firstName","lastName","skills","age","gender"];
 
 
@@ -53,6 +55,40 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   } catch (err) {
     res.status(400).send({ message: err.message });
   }
+});
+//Get feed of users with no connection
+userRouter.get( "/feed",userAuth,async(req,res)=>{
+try{
+ const loggedInUser=req.user;
+const connectionRequests=await ConnectionRequest.find({
+  or:[
+     {fromUserId:loggedInUser._id},
+     {toUserId:loggedInUser._id},
+  ],
+}).select("fromUserId toUserId");
+
+ const hideFromFeed=new Set();
+  connectionRequests.forEach((req)=>{
+  hideFromFeed.add(req.fromUserId).toString();
+  hideFromFeed.add(req.toUserId).toString();
+})
+
+const users=await User.find({
+  $and:[
+    {_id :{$nin:Array.from(hideFromFeed)}},
+    { _id :{$ne:loggedInUser._id}},
+  ],
+}).select(USER_SAFE_DATA);
+
+res.json({message:"User feed ",
+  data:users}
+);
+}
+catch(err){
+  res.status(400).json({message:err.message})
+}
+
+
 });
 
 
