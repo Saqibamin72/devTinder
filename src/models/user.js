@@ -30,11 +30,27 @@ const userSchema=new mongoose.Schema
     password:{
         type:String
     },
+    photoUrl: {
+        type: String,
+         
+        validate(value) {
+          if (!validator.isURL(value)) {
+            throw new Error("Invalid Photo URL: " + value);
+          }
+        },
+      },
+      gender:{
+        type:String,
+      },
+      age:{
+        type:Number,
+      },
+    
    
     skills:{
         type:[String],
     },
-    About:{
+    about:{
         type:String
 
     }
