@@ -17,7 +17,7 @@ profileRouter.get("/profile/view",userAuth,async(req,res)=>{
 try 
 {
 
-    if(!validateEditData){
+    if(validateEditData){
         throw new Error("invalid Edit request");
     }
     const LoggedInUser=req.user;
