@@ -9,7 +9,7 @@ const userAuth=async(req,res,next)=>{
     throw new Error("invalid token");
     }
    
-    const decodedObj=await jwt.verify(token,"Dev@Tinder790");
+    const decodedObj=await jwt.verify(token,process.env.JWT-SECRET-KEY);
     const{_id}=decodedObj;
    
     const user=await User.findById(_id);
