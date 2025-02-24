@@ -96,3 +96,5 @@ authRouter.post("/signUp", async(req,res)=>{
 
 
   module.exports=authRouter
+
+  
